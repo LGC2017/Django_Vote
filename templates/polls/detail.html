@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if choice %}
+    <h><b>{{ choice.0.question.question_test }}</b></h>
+    <ul>
+         {% for i in choice %}
+             <li><b>{{ i.choice_text }}</b></li>
+         {%  endfor %}
+    <ul>
+{% else %}
+    <p>No Polls are available</p>
+{% endif %}
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+<form action="{% url 'polls:vote' question.id %}" methode = "post">
+        {% csrf_token %}
+        {% for i in choice %}
+            <input type="radio" name="choice" id="i{{ forloop.counter }}" value="{{ i.id }}">
+            <label for="i{{ forloop.counter }}">{{ i.choice_text }}</label><br>
+        {% endfor %}
+<input type="submit" value="Vote">
+</form>
+</body>
+</html>
