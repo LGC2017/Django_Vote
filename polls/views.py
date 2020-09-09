@@ -30,8 +30,8 @@ def detail(request, question_id):
         raise Http404("question does not Exit")
     template = loader.get_template('polls/detail.html')
     choice = question.choice_set.all()
-    context = {'choice': choice}
-    context[question] = question
+    context = {'question': question}
+    #context[question] = question
     return HttpResponse(template.render(context, request))
     #return render(request, 'polls/detail.html', {'question': question})
     #return HttpResponse("You are looking at question %s." % question_id)
@@ -41,16 +41,16 @@ def results(request, question_id):
     return HttpResponse(response % question_id)
 
 def vote(request, question_id):
-    question = get_object_or_404(Question, question_id=question_id)
-    choice = question.choice_set.all()
+    question = get_object_or_404(Question, pk=question_id)
+    #choice = question.choice_set.all()
     try:
         #测试有没有默认选项
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except(KeyError, Choice.DoesNotExist):
-        return render(request, 'polls/detail.html', {'choice': choice, 'error_message': "You didn't select a choice"})
+        return render(request, 'polls/detail.html', {'question': question, 'error_message': "You didn't select a choice"})
     else:
         selected_choice.votes += 1
         selected_choice.save()
     #return HttpResponse("You're voting on question %s." % question_id)
-    return HttpResponseRedirect(reverse('polls:results', args = (question.id)))
-    #重定向页面到results页面，并且要给出充电共享参数
+    return HttpResponseRedirect(reverse('polls:results', args = (question.id,)))
+    #重定向页面到results页面，并且要给出重定向参数
