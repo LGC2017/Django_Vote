@@ -44,7 +44,7 @@ def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     #choice = question.choice_set.all()
     try:
-        #测试有没有默认选项
+        #测试有没有默认选项,request.POST['choice'],意思是获取提交的字符串数据，这里指明了是choice类型
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except(KeyError, Choice.DoesNotExist):
         return render(request, 'polls/detail.html', {'question': question, 'error_message': "You didn't select a choice"})
