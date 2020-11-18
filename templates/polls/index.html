@@ -8,6 +8,7 @@
 <body>
 <h1></h1>
 {% if latest_question_list %}
+    <h><b>Question List</b></h>
     <ul>
         {% for question in latest_question_list %}
              <li><a href = "{% url 'polls:detail' question.id %}">{{ question.question_test }}</a></li>
