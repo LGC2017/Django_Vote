@@ -37,8 +37,10 @@ def detail(request, question_id):
     #return HttpResponse("You are looking at question %s." % question_id)
 
 def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    template = loader.get_template('polls/results.html')
+    context = {'question': question}
+    return HttpResponse(template.render(context, request))
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
