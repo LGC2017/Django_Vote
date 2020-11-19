@@ -7,7 +7,46 @@ from django.shortcuts import  get_object_or_404, render
 from django.template import loader
 from .models import Question, Choice
 from django.urls import reverse
+from django.views import generic
 
+#运用DetailView和ListView
+#DetailView期望从URL中获得pk值，因此URL要包含pk
+#创建对应类，可以用emplate_name决定关联的html，用context_object_name决定传入参数的名字
+#虽然两个视图皆有默认选值，但是还是建议自定义context和template，这样不会错
+
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        return Question.objects.order_by('pub_date')[:2]
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
+
+
+def vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    #choice = question.choice_set.all()
+    try:
+        #测试有没有默认选项
+        selected_choice = question.choice_set.get(pk=request.POST['choice'])
+    except(KeyError, Choice.DoesNotExist):
+        return render(request, 'polls/detail.html', {'question': question, 'error_message': "You didn't select a choice"})
+    else:
+        selected_choice.votes += 1
+        selected_choice.save()
+    #return HttpResponse("You're voting on question %s." % question_id)
+    return HttpResponseRedirect(reverse('polls:results', args = (question.id,)))
+    #重定向页面到results页面，并且要给出重定向参数
+
+
+'''
 def index(request):
     latest_question_list = Question.objects.order_by('pub_date')[:5]
     #output = ' , '.join([q.question_test for q in latest_question_list])
@@ -57,3 +96,4 @@ def vote(request, question_id):
     #return HttpResponse("You're voting on question %s." % question_id)
     return HttpResponseRedirect(reverse('polls:results', args = (question.id,)))
     #重定向页面到results页面，并且要给出重定向参数
+'''
